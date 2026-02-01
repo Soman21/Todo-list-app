@@ -29,13 +29,29 @@ function ReadToDoItems() {
         const todoItems = `<div style="display:flex; align-items:center;" ondblclick="CompletedToDoItems(this)">
             <button class="complete-btn ${element.status ? 'completed' : ''}" onclick="event.stopPropagation(); CompletedToDoItems(this.parentElement)">${element.status ? '✓' : '○'}</button>
             <span class="task-text" style="${element.status ? 'text-decoration: line-through' : ''}">${element.item}</span>
-            ${element.status ? `<img class="todo-controls" src="/Todo-list-app/images/check.png"/>` : ''}
+            ${element.status ? `<img class="todo-controls" src="images/check.png"/>` : ''}
             </div><div>
-            ${element.status === false ? `<img class="edit todo-controls" onclick="UpdateToDoItems(this)" src="/Todo-list-app/images/edit.png"/>` : ''}
-            <img class="delete todo-controls" onclick="DeleteToDoItems(this)" src="/Todo-list-app/images/delete.png"/>
+            ${element.status === false ? `<img class="edit todo-controls" onclick="UpdateToDoItems(this)" src="images/edit.png"/>` : ''}
+            <img class="delete todo-controls" onclick="DeleteToDoItems(this)" src="images/delete.png"/>
             </div>`;
 
      li.innerHTML = todoItems;
+
+        if (element.status) {
+            const div = li.querySelector("div");
+            const completedText = document.createElement("span");
+            completedText.innerText = "Completed";
+            completedText.style.color = "#ffffff";
+            completedText.style.fontSize = "14px";
+            completedText.style.fontWeight = "600";
+            completedText.style.background = "green";
+            completedText.style.padding = "3px 8px";
+            completedText.style.borderRadius = "4px";
+            completedText.style.marginLeft = "8px";
+            completedText.className = "completed-text";
+            div.appendChild(completedText);
+        }
+
         listItems.appendChild(li);
     });
 }
@@ -66,8 +82,8 @@ function CreateToDoItems() {
             <button class="complete-btn" onclick="event.stopPropagation(); CompletedToDoItems(this.parentElement)">○</button>
             <span class="task-text">${todoValue.value}</span>
             </div><div>
-            <img class="edit todo-controls" onclick="UpdateToDoItems(this)" src="/Todo-list-app/images/edit.png"/>
-            <img class="delete todo-controls" onclick="DeleteToDoItems(this)" src="/Todo-list-app/images/delete.png"/></div>`;
+            <img class="edit todo-controls" onclick="UpdateToDoItems(this)" src="images/edit.png"/>
+            <img class="delete todo-controls" onclick="DeleteToDoItems(this)" src="images/delete.png"/></div>`;
 
         li.innerHTML = todoItems;
         listItems.appendChild(li);
@@ -106,7 +122,7 @@ function UpdateOnSelectionItems() {
 
     updateText.innerText = todoValue.value;
     addUpdate.setAttribute("onclick", "CreateToDoItems()");
-    addUpdate.setAttribute("src", "/Todo-list-app/images/plus.png");
+    addUpdate.setAttribute("src", "images/plus.png");
     todoValue.value = "";
 
     setAlertMessage("Todo item Updated Successfully!");
@@ -123,7 +139,7 @@ function CompletedToDoItems(e) {
         taskText.style.textDecoration = "line-through";
 
         const img = document.createElement("img");
-        img.src = "/Todo-list-app/images/check.png";
+        img.src = "images/check.png";
         img.className = "todo-controls";
         div.appendChild(img);
 
@@ -173,7 +189,7 @@ function CompletedToDoItems(e) {
         // Add back edit button
         const controlsDiv = li.querySelector("div:last-child");
         const editImg = document.createElement("img");
-        editImg.src = "/Todo-list-app/images/edit.png";
+        editImg.src = "images/edit.png";
         editImg.className = "edit todo-controls";
         editImg.setAttribute("onclick", "UpdateToDoItems(this)");
         controlsDiv.insertBefore(editImg, controlsDiv.firstChild);
@@ -196,7 +212,7 @@ function UpdateToDoItems(e) {
         todoValue.value = taskText.innerText;
         updateText = taskText;
         addUpdate.setAttribute("onclick", "UpdateOnSelectionItems()");
-        addUpdate.setAttribute("src", "/Todo-list-app/images/refresh.png");
+        addUpdate.setAttribute("src", "images/refresh.png");
         todoValue.focus();
     }
 }
@@ -225,21 +241,36 @@ function DeleteToDoItems(e) {
 }
 
 function triggerConfetti() {
-    const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff", "#ff8800", "#ffffff"];
-    for (let i = 0; i < 60; i++) {
+    const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff", "#ff8800", "#ffffff", "#ff69b4", "#ffd700"];
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    for (let i = 0; i < 150; i++) {
         const confetti = document.createElement("div");
         confetti.classList.add("confetti");
-        confetti.style.left = Math.random() * 100 + "vw";
+
+        const size = 8 + Math.random() * 10;
+        confetti.style.width = size + "px";
+        confetti.style.height = size + "px";
+        confetti.style.left = centerX + "px";
+        confetti.style.top = centerY + "px";
         confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.animationDuration = (2 + Math.random() * 2) + "s";
-        confetti.style.animationDelay = Math.random() * 0.5 + "s";
-        confetti.style.width = (6 + Math.random() * 8) + "px";
-        confetti.style.height = (6 + Math.random() * 8) + "px";
+
+        const tx = (Math.random() - 0.5) * 600;
+        const ty = (Math.random() - 0.5) * 400 + 100;
+        const rot = (Math.random() - 0.5) * 720;
+        const duration = 1.5 + Math.random() * 1.5;
+
+        confetti.style.setProperty("--tx", tx + "px");
+        confetti.style.setProperty("--ty", ty + "px");
+        confetti.style.setProperty("--rot", rot + "deg");
+        confetti.style.animation = `confetti-burst ${duration}s ease-out forwards`;
+
         document.body.appendChild(confetti);
 
         setTimeout(() => {
             confetti.remove();
-        }, 4000);
+        }, (duration + 0.5) * 1000);
     }
 }
 
